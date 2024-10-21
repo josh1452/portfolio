@@ -3,23 +3,23 @@
  html5up.net | @ajlkn
  Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 
- Added EXIF data and enhanced for Jekyll by Ram Patra
+ Modified for custom functionality by [Your Name]
  */
 
-(function ($) {
+ (function ($) {
 
     skel.breakpoints({
         xlarge: '(max-width: 1680px)',
-        large: '(max-width: 1280px)',
+        large:  '(max-width: 1280px)',
         medium: '(max-width: 980px)',
-        small: '(max-width: 736px)',
+        small:  '(max-width: 736px)',
         xsmall: '(max-width: 480px)'
     });
 
     $(function () {
 
-        var $window = $(window),
-            $body = $('body'),
+        var $window  = $(window),
+            $body    = $('body'),
             $wrapper = $('#wrapper');
 
         // Hack: Enable IE workarounds.
@@ -30,17 +30,17 @@
         if (skel.vars.mobile)
             $body.addClass('touch');
 
+        // Disable animations/transitions until the page has loaded.
+        $body.addClass('is-loading');
+
+        $window.on('load', function () {
+            window.setTimeout(function () {
+                $body.removeClass('is-loading');
+            }, 100);
+        });
+
         // Transitions supported?
         if (skel.canUse('transition')) {
-
-            // Add (and later, on load, remove) "loading" class.
-            $body.addClass('loading');
-
-            $window.on('load', function () {
-                window.setTimeout(function () {
-                    $body.removeClass('loading');
-                }, 100);
-            });
 
             // Prevent transitions/animations on resize.
             var resizeTimeout;
@@ -70,57 +70,54 @@
 
         $panels.each(function () {
 
-            var $this = $(this),
+            var $this   = $(this),
                 $toggles = $('[href="#' + $this.attr('id') + '"]'),
-                $closer = $('<div class="closer" />').appendTo($this);
+                $closer  = $('<div class="closer" />').appendTo($this);
 
             // Closer.
-            $closer
-                .on('click', function (event) {
-                    $this.trigger('---hide');
-                });
+            $closer.on('click', function (event) {
+                $this.trigger('---hide');
+            });
 
             // Events.
-            $this
-                .on('click', function (event) {
-                    event.stopPropagation();
-                })
-                .on('---toggle', function () {
+            $this.on('click', function (event) {
+                event.stopPropagation();
+            })
+            .on('---toggle', function () {
 
-                    if ($this.hasClass('active'))
-                        $this.triggerHandler('---hide');
-                    else
-                        $this.triggerHandler('---show');
+                if ($this.hasClass('active'))
+                    $this.triggerHandler('---hide');
+                else
+                    $this.triggerHandler('---show');
 
-                })
-                .on('---show', function () {
+            })
+            .on('---show', function () {
 
-                    // Hide other content.
-                    if ($body.hasClass('content-active'))
-                        $panels.trigger('---hide');
+                // Hide other content.
+                if ($body.hasClass('content-active'))
+                    $panels.trigger('---hide');
 
-                    // Activate content, toggles.
-                    $this.addClass('active');
-                    $toggles.addClass('active');
+                // Activate content, toggles.
+                $this.addClass('active');
+                $toggles.addClass('active');
 
-                    // Activate body.
-                    $body.addClass('content-active');
+                // Activate body.
+                $body.addClass('content-active');
 
-                })
-                .on('---hide', function () {
+            })
+            .on('---hide', function () {
 
-                    // Deactivate content, toggles.
-                    $this.removeClass('active');
-                    $toggles.removeClass('active');
+                // Deactivate content, toggles.
+                $this.removeClass('active');
+                $toggles.removeClass('active');
 
-                    // Deactivate body.
-                    $body.removeClass('content-active');
+                // Deactivate body.
+                $body.removeClass('content-active');
 
-                });
+            });
 
             // Toggles.
-            $toggles
-                .removeAttr('href')
+            $toggles.removeAttr('href')
                 .css('cursor', 'pointer')
                 .on('click', function (event) {
 
@@ -134,34 +131,31 @@
         });
 
         // Global events.
-        $body
-            .on('click', function (event) {
+        $body.on('click', function (event) {
 
-                if ($body.hasClass('content-active')) {
+            if ($body.hasClass('content-active')) {
 
-                    event.preventDefault();
-                    event.stopPropagation();
+                event.preventDefault();
+                event.stopPropagation();
 
-                    $panels.trigger('---hide');
+                $panels.trigger('---hide');
 
-                }
+            }
 
-            });
+        });
 
-        $window
-            .on('keyup', function (event) {
+        $window.on('keyup', function (event) {
 
-                if (event.keyCode == 27
-                    && $body.hasClass('content-active')) {
+            if (event.keyCode === 27 && $body.hasClass('content-active')) {
 
-                    event.preventDefault();
-                    event.stopPropagation();
+                event.preventDefault();
+                event.stopPropagation();
 
-                    $panels.trigger('---hide');
+                $panels.trigger('---hide');
 
-                }
+            }
 
-            });
+        });
 
         // Header.
         var $header = $('#header');
@@ -170,16 +164,14 @@
         $header.find('a').each(function () {
 
             var $this = $(this),
-                href = $this.attr('href');
+                href  = $this.attr('href');
 
             // Internal link? Skip.
-            if (!href
-                || href.charAt(0) == '#')
+            if (!href || href.charAt(0) === '#')
                 return;
 
             // Redirect on click.
-            $this
-                .removeAttr('href')
+            $this.removeAttr('href')
                 .css('cursor', 'pointer')
                 .on('click', function (event) {
 
@@ -196,130 +188,51 @@
         var $footer = $('#footer');
 
         // Copyright.
-        // This basically just moves the copyright line to the end of the *last* sibling of its current parent
+        // Moves the copyright line to the end of the last sibling of its current parent
         // when the "medium" breakpoint activates, and moves it back when it deactivates.
         $footer.find('.copyright').each(function () {
 
-            var $this = $(this),
-                $parent = $this.parent(),
+            var $this       = $(this),
+                $parent     = $this.parent(),
                 $lastParent = $parent.parent().children().last();
 
-            skel
-                .on('+medium', function () {
-                    $this.appendTo($lastParent);
-                })
-                .on('-medium', function () {
-                    $this.appendTo($parent);
-                });
+            skel.on('+medium', function () {
+                $this.appendTo($lastParent);
+            })
+            .on('-medium', function () {
+                $this.appendTo($parent);
+            });
 
         });
 
         // Main.
-        var $main = $('#main'),
-            exifDatas = {};
+        var $main = $('#main');
 
         // Thumbs.
         $main.children('.thumb').each(function () {
 
             var $this = $(this),
-                $image = $this.find('.image'), $image_img = $image.children('img'),
-                x;
+                $image = $this.find('img'),
+                $link = $this.find('a');
 
             // No image? Bail.
-            if ($image.length == 0)
+            if ($image.length === 0)
                 return;
 
-            // Image.
-            // This sets the background of the "image" <span> to the image pointed to by its child
-            // <img> (which is then hidden). Gives us way more flexibility.
+            // Show the original img element (ensure it is visible).
+            $image.show();
 
-            // Set background.
-            $image.css('background-image', 'url(' + $image_img.attr('src') + ')');
-
-            // Set background position.
-            if (x = $image_img.data('position'))
-                $image.css('background-position', x);
-
-            // Hide original img.
-            $image_img.hide();
-
-            // Hack: IE<11 doesn't support pointer-events, which means clicks to our image never
-            // land as they're blocked by the thumbnail's caption overlay gradient. This just forces
-            // the click through to the image.
+            // Hack for IE<11 to ensure click events work.
             if (skel.vars.IEVersion < 11)
-                $this
-                    .css('cursor', 'pointer')
+                $this.css('cursor', 'pointer')
                     .on('click', function () {
-                        $image.trigger('click');
+                        $link.trigger('click');
                     });
-
-            // EXIF data
-            $image_img[0].addEventListener("load", function() {
-                EXIF.getData($image_img[0], function () {
-                    exifDatas[$image_img.data('name')] = getExifDataMarkup(this);
-                });
-            });
 
         });
 
-        // Poptrox.
-        $main.poptrox({
-            baseZIndex: 20000,
-            caption: function ($a) {
-                var $image_img = $a.children('img');
-                var data = exifDatas[$image_img.data('name')];
-                if (data === undefined) {
-                    // EXIF data					
-                    EXIF.getData($image_img[0], function () {
-                        data = exifDatas[$image_img.data('name')] = getExifDataMarkup(this);
-                    });
-                }
-                return data !== undefined ? '<p>' + data + '</p>' : ' ';
-            },
-            fadeSpeed: 300,
-            onPopupClose: function () {
-                $body.removeClass('modal-active');
-            },
-            onPopupOpen: function () {
-                $body.addClass('modal-active');
-            },
-            overlayOpacity: 0,
-            popupCloserText: '',
-            popupHeight: 150,
-            popupLoaderText: '',
-            popupSpeed: 300,
-            popupWidth: 150,
-            selector: '.thumb > a.image',
-            usePopupCaption: true,
-            usePopupCloser: true,
-            usePopupDefaultStyling: false,
-            usePopupForceClose: true,
-            usePopupLoader: true,
-            usePopupNav: true,
-            windowMargin: 50
-        });
-
-        // Hack: Set margins to 0 when 'xsmall' activates.
-        skel
-            .on('-xsmall', function () {
-                $main[0]._poptrox.windowMargin = 50;
-            })
-            .on('+xsmall', function () {
-                $main[0]._poptrox.windowMargin = 0;
-            });
-
-        function getExifDataMarkup(img) {
-            var exif = $('#main').data('exif');
-            var template = '';
-            for (var current in exif) {
-                var current_data = exif[current];
-                var exif_data = EXIF.getTag(img, current_data['tag']);
-                if (typeof exif_data !== "undefined") {
-                    template += '<i class="fa fa-' + current_data['icon'] + '" aria-hidden="true"></i> ' + exif_data + '&nbsp;&nbsp;';
-                }
-            }
-            return template;
-        }
+        // Removed Poptrox initialization to disable lightbox functionality.
+        // This ensures that clicking on an image navigates to the link's href.
 
     });
 

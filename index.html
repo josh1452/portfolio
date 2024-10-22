@@ -7,7 +7,7 @@ layout: default
 
     <!-- Header -->
     <header id="header">
-        <h1><a href="index.html"><strong>{{ site.header.title }}</strong> {{ site.header.subtitle }}</a></h1>
+        <h1><a href="{{ site.baseurl }}/index.html"><strong>{{ site.header.title }}</strong> {{ site.header.subtitle }}</a></h1>
         <nav>
             <ul>
                 <li><a href="#footer" class="icon fa-info-circle">About</a></li>
@@ -18,15 +18,14 @@ layout: default
     <!-- Main -->
     <div id="main" data-exif='{{ site.exif }}'>
         {% for image in site.static_files %}
-        {% if image.path contains 'fulls' %}
-        <article class="thumb">
-            <a href="{{ site.baseurl }}/projects/{{ image.slug }}/" class="image">
-                <img src="{{ site.baseurl }}{{ site.image_thumbs_loc }}/{{ image.name }}" alt="{{ image.title }}" />
-            </a>
-            <h2>{{ image.title }}</h2>
-        </article>
-        
-        {% endif %}
+            {% if image.path contains '/assets/images/fulls/' %}
+                <article class="thumb">
+                    <a href="{{ site.baseurl }}{{ image.path }}" class="image">
+                        <img src="{{ site.baseurl }}{{ image.path | replace: '/fulls/', '/thumbs/' }}" alt="{{ image.name }}" />
+                    </a>
+                    <h2>{{ image.name }}</h2>
+                </article>
+            {% endif %}
         {% endfor %}
     </div>
 
@@ -40,7 +39,7 @@ layout: default
                     <p>{{ site.footer.github }}</p>
                 </section>
                 <section>
-                    
+                    <!-- Additional content if needed -->
                 </section>
                 <section>
                     <h2>Follow me on ...</h2>
@@ -101,7 +100,7 @@ layout: default
                             <input type="text" name="name" id="name" placeholder="Name"/>
                         </div>
                         <div class="field half">
-                            <input type="text" name="email" id="email" placeholder="Email"/>
+                            <input type="email" name="email" id="email" placeholder="Email"/>
                         </div>
                         <div class="field">
                             <textarea name="message" id="message" rows="4" placeholder="Message"></textarea>
